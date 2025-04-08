@@ -1,3 +1,4 @@
+#production_order_db.py
 import sqlite3
 import os
 
@@ -11,16 +12,23 @@ def init_order_table():
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS production_order (
-            ma_lenh TEXT PRIMARY KEY,
-            ngay_gio TEXT NOT NULL,
+            ma TEXT PRIMARY KEY,
+            ten TEXT NOT NULL,
+            nhan_cong TEXT NOT NULL,
+            thiet_bi TEXT NOT NULL,
             trang_thai TEXT NOT NULL,
             file_path TEXT
         )
     """)
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA table_info(production_order)")
+    columns = cursor.fetchall()
+
     conn.commit()
     conn.close()
 
-def get_all_orders():
+def get_all_PO():
     init_order_table()
     conn = get_connection()
     cursor = conn.cursor()
@@ -29,35 +37,31 @@ def get_all_orders():
     conn.close()
     return rows
 
-def add_order(ma_lenh, ngay_gio, trang_thai, file_path=None):
+def add_order(ma, ten, nhan_cong, thiet_bi, trang_thai):
     init_order_table()
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO production_order (ma_lenh, ngay_gio, trang_thai, file_path) VALUES (?, ?, ?, ?)",
-        (ma_lenh, ngay_gio, trang_thai, file_path)
+        "INSERT INTO production_order (ma, ten, nhan_cong, thiet_bi, trang_thai) VALUES (?, ?, ?, ?, ?)",
+        (ma, ten, nhan_cong, thiet_bi, trang_thai)
     )
     conn.commit()
     conn.close()
 
-def update_order(ma_lenh, ngay_gio, trang_thai, file_path=None):
+def update_order(ma, ten, nhan_cong, thiet_bi, trang_thai):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
         "UPDATE production_order SET ngay_gio=?, trang_thai=?, file_path=? WHERE ma_lenh=?",
-        (ngay_gio, trang_thai, file_path, ma_lenh)
+        (ten, nhan_cong, thiet_bi, trang_thai, ma)
     )
+
     conn.commit()
     conn.close()
 
-def delete_order(ma_lenh):
+def delete_PO(ma):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM production_order WHERE ma_lenh=?", (ma_lenh,))
+    cursor.execute("DELETE FROM production_order WHERE ma=?", (ma,))
     conn.commit()
     conn.close()
-    
-    # Xóa file đính kèm nếu có
-    file_path = f"production_orders/{ma_lenh}"
-    if os.path.exists(file_path):
-        os.remove(file_path)
