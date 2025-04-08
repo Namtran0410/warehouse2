@@ -1,7 +1,7 @@
-# main.py
 import tkinter as tk
 from gui.BomPage_ui import BomPageUI
 from gui.device_ui import DevicePageUI
+from gui.production_order_ui import ProductionOrderPageUI  # Import module mới
 
 class MainUI(tk.Frame):
     def __init__(self, master):
@@ -25,13 +25,14 @@ class MainUI(tk.Frame):
 
         # Gán hành động cho từng nút
         self.sidebar_buttons[1].configure(command=lambda: self.load_bom_page())
+        self.sidebar_buttons[2].configure(command=lambda: self.load_production_order_page())  # Thêm hành động cho nút Lệnh sản xuất
         self.sidebar_buttons[4].configure(command=lambda: self.load_device_page())
 
         # Content
         self.content_frame = tk.Frame(self)
         self.content_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=20, pady=20)
 
-        self.load_bom_page()
+        self.load_bom_page()  # Load trang mặc định
 
     def reset_sidebar_buttons(self):
         for btn in self.sidebar_buttons:
@@ -49,7 +50,14 @@ class MainUI(tk.Frame):
         self.sidebar_buttons[4].configure(bg="green", fg="white")
         for widget in self.content_frame.winfo_children():
             widget.destroy()
-        DevicePageUI(self.content_frame)  # Thêm vào content_frame để hiển thị
+        DevicePageUI(self.content_frame)
+
+    def load_production_order_page(self):
+        self.reset_sidebar_buttons()
+        self.sidebar_buttons[2].configure(bg="green", fg="white")
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+        ProductionOrderPageUI(self.content_frame)  # Load trang quản lý lệnh sản xuất
 
 
 def main():
